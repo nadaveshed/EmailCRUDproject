@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useEffect, useState } from 'react';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+import WelcomeScreen from './components/WelcomeScreen';
+import EmailList from './components/EmailList';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App: React.FC = () => {
+    const [receiverEmail, setReceiverEmail] = useState<string | null>(null);
+
+    const handleEmailSubmit = (email: string) => {
+        setReceiverEmail(email);
+    };
+
+    const handleBackToWelcome = () => {
+        setReceiverEmail(null);
+        sessionStorage.removeItem('receiverEmail');
+    };
+
+    useEffect(() => {
+        const storedEmail = sessionStorage.getItem('receiverEmail');
+        if (storedEmail) {
+            setReceiverEmail(storedEmail);
+        }
+    }, []);
+
+    return (
+        <Provider store={store}>
+            <div>
+                {!receiverEmail ? (
+                    <WelcomeScreen onEmailSubmit={handleEmailSubmit} />
+                ) : (
+                    <EmailList
+                        receiverEmail={receiverEmail}
+                        onBack={handleBackToWelcome}
+                    />
+                )}
+            </div>
+        </Provider>
+    );
+};
 
 export default App;

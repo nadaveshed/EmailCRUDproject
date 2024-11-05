@@ -1,0 +1,38 @@
+.email-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.left-column {
+    width: 70%;
+}
+
+.right-column {
+    width: 25%;
+}
+
+.right-column .MuiFormControl-root {
+    width: 100%;
+}
+
+.right-column label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.form-btn-div {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.email-form-btn {
+    width: 200px;
+}
