@@ -1,46 +1,154 @@
-# Getting Started with Create React App
+# Email Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a simple email application that allows users to send, receive, and manage emails. It consists of a backend built with FastAPI and a frontend built with React, utilizing Redux for state management.
 
-## Available Scripts
+## Project Structure
 
-In the project directory, you can run:
+- **Backend**: Located in the `backend` branch.
+- **Frontend**: Located in the `frontend` branch.
 
-### `npm start`
+## Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Docker
+- Docker Compose
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+To get started, you need to set up the backend server first. Follow the instructions below:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 1. Clone the Repository
 
-### `npm run build`
+```bash
+git clone https://your-repo-url.git
+cd your-repo-directory
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 2. Switch to the Backend Branch
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+git checkout backend
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 3. Set Up the Database
 
-### `npm run eject`
+Before running the server, ensure you have PostgreSQL installed. You can use Docker to run PostgreSQL as well.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+If you're using Docker, you can define your database in the `docker-compose.yml` file. Here’s an example configuration:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```yaml
+version: '3.8'
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: email_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+volumes:
+  postgres_data:
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 4. Start the Backend Server
 
-## Learn More
+Make sure you're in the backend directory with the `docker-compose.yml` file, then run:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+docker-compose up --build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This will start the backend server along with the PostgreSQL database.
+
+### 5. Switch to the Frontend Branch
+
+After the backend server is running, switch to the frontend branch:
+
+```bash
+git checkout frontend
+```
+
+### 6. Install Frontend Dependencies
+
+Make sure you have Node.js and npm installed. Then, install the frontend dependencies:
+
+```bash
+npm install
+```
+
+### 7. Start the Frontend Server
+
+You can start the frontend application using:
+
+```bash
+npm start
+```
+
+This will run the application on `http://localhost:3000`.
+
+## Docker Option
+
+To run both the backend and frontend applications using Docker, you can create a multi-service `docker-compose.yml` file that incorporates both projects.
+
+### Sample Docker Compose Configuration
+
+```yaml
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: email_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+```
+
+## Database
+
+The application uses PostgreSQL as the database to store user information, emails, and attachments. The database schema is defined to support functionalities such as:
+
+- Storing user email addresses.
+- Storing email metadata including subject, body, sender, and receiver details.
+- Supporting file attachments in Base64 format.
+
+Make sure to create the necessary database tables according to your schema requirements.
+
+## Usage
+
+1. **Send Emails**: Users can compose and send emails to other users.
+2. **View Emails**: Users can view their received emails.
+3. **Attachments**: Users can attach files to their emails.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
