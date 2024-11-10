@@ -1,8 +1,8 @@
 # Use the official Node.js image as a base
 FROM node:16 AS build
 
-# Set the working directory
-WORKDIR /app
+# Set the working directory (adjusting to match where your app is)
+WORKDIR /email-app-frontend
 
 # Copy the package.json and package-lock.json files
 COPY package*.json ./
@@ -20,7 +20,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy the build output to the Nginx html directory
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /email-app-frontend/build /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80

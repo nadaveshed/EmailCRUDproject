@@ -55,7 +55,7 @@ export const downloadAttachment = createAsyncThunk<void, string, { rejectValue: 
     'emails/downloadAttachment',
     async (filename: string, { rejectWithValue }) => {
         try {
-            const response = await fetch(`/api/download?filename=${encodeURIComponent(filename)}`);
+            const response = await fetch(`${API_URL}/download?filename=${encodeURIComponent(filename)}`);
             if (!response.ok) throw new Error('Network response was not ok');
 
             const blob = await response.blob();
