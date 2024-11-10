@@ -55,7 +55,9 @@ export const downloadAttachment = createAsyncThunk<void, string, { rejectValue: 
     'emails/downloadAttachment',
     async (filename: string, { rejectWithValue }) => {
         try {
-            const response = await fetch(`${API_URL}/download?filename=${encodeURIComponent(filename)}`);
+            const cleanFilename = filename.replace(/^attachments[\\\/]/, '');
+
+            const response = await fetch(`${API_URL}/download/attachments/${encodeURIComponent(cleanFilename)}`);
             if (!response.ok) throw new Error('Network response was not ok');
 
             const blob = await response.blob();
@@ -106,6 +108,7 @@ const emailSlice = createSlice({
             .addCase(downloadAttachment.fulfilled, () => {
             })
             .addCase(downloadAttachment.rejected, (state, action) => {
+                state.loading = false;
                 console.error('Download failed:', action.error.message);
             });
     },
