@@ -138,6 +138,7 @@ async def get_emails_for_user(receiver_email: str, db: Session = Depends(get_db)
 @app.get("/download/attachments/{filename}")
 async def download_file(filename: str):
     file_path = os.path.join(ATTACHMENTS_DIR, filename)
+    logger.info(f'filename: {filename}')
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(file_path, media_type='application/octet-stream', filename=filename)
