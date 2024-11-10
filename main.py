@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import List, Optional
+from urllib.parse import unquote
 
 from fastapi import FastAPI, Depends, HTTPException, Query, Form, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
@@ -113,32 +114,36 @@ def get_emails(
     return response_emails
 
 
-@app.get("/emails/{receiver_email}", response_model=List[EmailResponse])
-async def get_emails_for_user(receiver_email: str, db: Session = Depends(get_db)):
-    emails = db.query(EmailModel).filter(EmailModel.receiver_email == receiver_email).all()
-
-    response_emails = []
-    for email in emails:
-        attachments = email.attachments if isinstance(email.attachments, list) else [email.attachments] if email.attachments else []
-        response_emails.append(
-            EmailResponse(
-                id=email.id,
-                subject=email.subject,
-                sender_email=email.sender_email,
-                body=email.body,
-                receiver_email=email.receiver_email,
-                attachments=attachments,
-                date_sent=email.date_sent.isoformat()
-            )
-        )
-    logger.info(f'emails: {response_emails}')
-    return response_emails
+# @app.get("/emails/{receiver_email}", response_model=List[EmailResponse])
+# async def get_emails_for_user(receiver_email: str, db: Session = Depends(get_db)):
+#     emails = db.query(EmailModel).filter(EmailModel.receiver_email == receiver_email).all()
+#
+#     response_emails = []
+#     for email in emails:
+#         attachments = email.attachments if isinstance(email.attachments, list) else [email.attachments] if email.attachments else []
+#         response_emails.append(
+#             EmailResponse(
+#                 id=email.id,
+#                 subject=email.subject,
+#                 sender_email=email.sender_email,
+#                 body=email.body,
+#                 receiver_email=email.receiver_email,
+#                 attachments=attachments,
+#                 date_sent=email.date_sent.isoformat()
+#             )
+#         )
+#     logger.info(f'emails: {response_emails}')
+#     return response_emails
 
 
 @app.get("/download/attachments/{filename}")
 async def download_file(filename: str):
-    file_path = os.path.join(ATTACHMENTS_DIR, filename)
-    logger.info(f'filename: {filename}')
+    # file_path = os.path.join(ATTACHMENTS_DIR, filename)
+    decoded_filename = unquote(filename)
+
+    file_path = os.path.join(ATTACHMENTS_DIR, decoded_filename.replace("\\", "/"))
+    logger.info(f'file_path: {file_path}')
+
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(file_path, media_type='application/octet-stream', filename=filename)
